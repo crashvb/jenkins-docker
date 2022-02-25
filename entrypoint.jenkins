@@ -1,0 +1,127 @@
+#!/bin/bash
+
+set -e
+
+# Note: Must be done every time as it is referenced in supervisord configuration
+generate_password jenkins_keystore
+
+# Configure: jenkins
+if [[ ! -e $EP_RUN ]] ; then
+	log "Configuring $(basename $0) for first run ..."
+
+	# Generate passwords (needed for CasC) ...
+	generate_password jenkins_admin
+
+	# Generate ssh keys ...
+	generate_sshkey jenkins
+
+	# Generate keypairs ...
+	if [[ -e $EP_SECRETS_ROOT/jenkinsca.crt && -e $EP_SECRETS_ROOT/jenkins.crt && -e $EP_SECRETS_ROOT/jenkins.key ]] ; then
+		log "Importing jenkinsca.crt, jenkins.crt, and jenkins.key from secrets ..."
+	else
+		# Note: Key size must be >= 3072 for "HIGH" security:
+		export JENKINS_CERT_DAYS=${JENKINS_CERT_DAYS:-30}
+		export JENKINS_KEY_SIZE=${JENKINS_KEY_SIZE:-4096}
+
+		log "Generating jenkinsca.crt, jenkins.crt, and jenkins.key in secrets ..."
+
+		log "	certificate authority"
+		openssl genrsa \
+			-out /dev/shm/jenkinsca.key \
+			$JENKINS_KEY_SIZE
+		openssl req \
+			-days $JENKINS_CERT_DAYS \
+			-key /dev/shm/jenkinsca.key \
+			-new \
+			-nodes \
+			-out $EP_SECRETS_ROOT/jenkinsca.crt \
+			-sha256 \
+			-subj "/CN=jenkins ca" \
+			-x509
+
+		log "	server certificate"
+		openssl genrsa \
+			-out $EP_SECRETS_ROOT/jenkins.key \
+			$JENKINS_KEY_SIZE
+		openssl req \
+			-key $EP_SECRETS_ROOT/jenkins.key \
+			-new \
+			-nodes \
+			-out /dev/shm/jenkins.csr \
+			-sha256 \
+			-subj "/CN=jenkins server"
+		openssl x509 \
+			-CA $EP_SECRETS_ROOT/jenkinsca.crt \
+			-CAkey /dev/shm/jenkinsca.key \
+			-CAcreateserial \
+			-days $JENKINS_CERT_DAYS \
+			-in /dev/shm/jenkins.csr \
+			-out $EP_SECRETS_ROOT/jenkins.crt \
+			-req \
+			-sha256
+
+		rm /dev/shm/{jenkinsca.key,jenkins.csr} $EP_SECRETS_ROOT/jenkinsca.srl
+
+	fi
+	install --group=ssl-cert --mode=0640 --owner=root $EP_SECRETS_ROOT/jenkins.key /etc/ssl/private/
+	install --group=root --mode=0644 --owner=root $EP_SECRETS_ROOT/jenkins{,ca}.crt /etc/ssl/certs/
+
+	ln --symbolic /etc/ssl/certs/jenkinsca.crt /usr/share/ca-certificates/
+	echo jenkinsca.crt >> /etc/ca-certificates.conf
+	update-ca-certificates
+
+	# Generate java keystore ...
+	if [[ -e ${JENKINS_HOME}/jenkins.jks ]] ; then
+		log "Using jenkins.jks from ${JENKINS_HOME} ..."
+	else
+		log "Generating: jenkins.jks"
+
+		log "	p12"
+		# Note: The key password is derived from store password, and needs to be aligned for jenkins to start
+		openssl pkcs12 \
+			-certfile /etc/ssl/certs/jenkinsca.crt \
+			-export \
+			-in /etc/ssl/certs/jenkins.crt \
+			-inkey /etc/ssl/private/jenkins.key \
+			-name jenkins.local \
+			-out /dev/shm/jenkins.p12 \
+			-passout "pass:${JENKINS_KEYSTORE_PASSWORD}"
+
+		log "	jks"
+		keytool \
+			-destalias jenkins.local \
+			-destkeystore ${JENKINS_HOME}/jenkins.jks \
+			-deststorepass "${JENKINS_KEYSTORE_PASSWORD}" \
+			-deststoretype JKS \
+			-importkeystore \
+			-srcalias jenkins.local \
+			-srckeystore /dev/shm/jenkins.p12 \
+			-srcstorepass "${JENKINS_KEYSTORE_PASSWORD}" \
+			-srcstoretype PKCS12
+
+		rm /dev/shm/jenkins.p12
+	fi
+
+	# Volume initialization
+	if [[ ! -e ${JENKINS_HOME}/jenkins.war ]] ; then
+		log "Initializing data volume ..."
+
+		log "Deploying: jenkins.war.${JENKINS_VERSION}"
+		cp --no-clobber ${JENKINS_SHARE}/jenkins.war.${JENKINS_VERSION} ${JENKINS_HOME}/jenkins.war
+
+		log "Deploying reference ..."
+		cp --no-clobber --recursive ${JENKINS_SHARE}/ref/* ${JENKINS_HOME}/
+	else
+		log "Skipping data volume initialization ..."
+	fi
+
+	if [[ -n ${JENKINS_PLUGINS} ]] ; then
+		log "Installing plugins: ${JENKINS_PLUGINS} ..."
+		IFS="," read -a jenkins_plugins -r <<< "${JENKINS_PLUGINS}"
+		jenkins-plugin-cli --latest --latest-specified --plugin-download-directory ${JENKINS_HOME}/plugins/ --plugins ${jenkins_plugins[@]} --view-security-warnings --war ${JENKINS_HOME}/jenkins.war
+	fi
+
+	log "Applying ownership and permissions ..."
+	find ${JENKINS_HOME} \( \! -user jenkins -o \! -group jenkins \) -exec chown jenkins:jenkins {} \;
+fi
+
