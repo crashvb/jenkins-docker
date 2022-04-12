@@ -27,7 +27,7 @@ ENV \
 	JENKINS_UID=1000 \
 	JENKINS_VERSION=2.326 \
 	JENKINS_VERSION_CLI=2.9.3
-ADD jenkins-plugin-cli /usr/local/bin/
+COPY jenkins-plugin-cli /usr/local/bin/
 RUN groupadd --gid=${JENKINS_GID} jenkins && \
 	useradd --gid=${JENKINS_GID} --groups=ssl-cert --home-dir=${JENKINS_HOME} --no-create-home --uid=${JENKINS_UID} jenkins && \
 	mkdir --parents ${JENKINS_SHARE} && \
@@ -41,13 +41,13 @@ RUN groupadd --gid=${JENKINS_GID} jenkins && \
 	echo "JENKINS_HOME=${JENKINS_HOME}" >> /etc/environment
 
 # Configure: supervisor
-ADD supervisord.jenkins.conf /etc/supervisor/conf.d/jenkins.conf
+COPY supervisord.jenkins.conf /etc/supervisor/conf.d/jenkins.conf
 
 # Configure: entrypoint
-ADD entrypoint.jenkins /etc/entrypoint.d/jenkins
+COPY entrypoint.jenkins /etc/entrypoint.d/jenkins
 
 # Configure: healthcheck
-ADD healthcheck.jenkins /etc/healthcheck.d/jenkins
+COPY healthcheck.jenkins /etc/healthcheck.d/jenkins
 
 EXPOSE 443/tcp 50000/tcp
 

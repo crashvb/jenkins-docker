@@ -1,5 +1,10 @@
 # jenkins-docker
 
+[![version)](https://img.shields.io/docker/v/crashvb/jenkins/latest)](https://hub.docker.com/repository/docker/crashvb/jenkins)
+[![image size](https://img.shields.io/docker/image-size/crashvb/jenkins/latest)](https://hub.docker.com/repository/docker/crashvb/jenkins)
+[![linting](https://img.shields.io/badge/linting-hadolint-yellow)](https://github.com/hadolint/hadolint)
+[![license](https://img.shields.io/github/license/crashvb/jenkins-docker.svg)](https://github.com/crashvb/jenkins-docker/blob/master/LICENSE.md)
+
 ## Overview
 
 This docker image contains [jenkins](https://jenkins-ci.org/).
@@ -15,9 +20,9 @@ The embedded entrypoint script is located at `/etc/entrypoint.d/jenkins and perf
 
  | Variable | Default Value | Description |
  | -------- | ------------- | ----------- |
- | JENKINS_CERT_DAYS | 30 | Validity period of any generated PKI certificates. |
- | JENKINS_KEY_SIZE | 4096 | Key size of any generated PKI keys. |
- | JENKINS_PLUGINS | | Comma-separated list of plugin names to be installed. |
+ | JENKINS\_CERT\_DAYS | 30 | Validity period of any generated PKI certificates. |
+ | JENKINS\_KEY\_SIZE | 4096 | Key size of any generated PKI keys. |
+ | JENKINS\_PLUGINS | | Comma-separated list of plugin names to be installed. |
 
 ## Healthcheck Scripts
 
