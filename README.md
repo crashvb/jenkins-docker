@@ -20,8 +20,6 @@ The embedded entrypoint script is located at `/etc/entrypoint.d/jenkins and perf
 
  | Variable | Default Value | Description |
  | -------- | ------------- | ----------- |
- | JENKINS\_CERT\_DAYS | 30 | Validity period of any generated PKI certificates. |
- | JENKINS\_KEY\_SIZE | 4096 | Key size of any generated PKI keys. |
  | JENKINS\_PLUGINS | | Comma-separated list of plugin names to be installed. |
 
 ## Healthcheck Scripts
@@ -46,6 +44,8 @@ The embedded healthcheck script is located at `/etc/healthcheck.d/jenkins` and p
 │     └─ jenkins
 ├─ run/
 │  └─ secrets/
+│     ├─ id_rsa.jenkins
+│     ├─ id_rsa.jenkins.pub
 │     ├─ jenkins.crt
 │     ├─ jenkins.jks
 │     ├─ jenkins.key
