@@ -22,14 +22,6 @@ The embedded entrypoint script is located at `/etc/entrypoint.d/jenkins and perf
  | -------- | ------------- | ----------- |
  | JENKINS\_PLUGINS | | Comma-separated list of plugin names to be installed. |
 
-## Healthcheck Scripts
-
-### jenkins
-
-The embedded healthcheck script is located at `/etc/healthcheck.d/jenkins` and performs the following actions:
-
-1. Verifies that all jenkins services are operational.
-
 ## Standard Configuration
 
 ### Container Layout
