@@ -32,8 +32,11 @@ The embedded entrypoint script is located at `/etc/entrypoint.d/jenkins and perf
 │  ├─ jenkins/
 │  ├─ entrypoint.d/
 │  │  └─ jenkins
-│  └─ healthcheck.d/
-│     └─ jenkins
+│  ├─ healthcheck.d/
+│  │  └─ jenkins
+│  └─ supervisor/
+│     └─ config.d/
+│        └─ jenkins.conf
 ├─ run/
 │  └─ secrets/
 │     ├─ id_rsa.jenkins
