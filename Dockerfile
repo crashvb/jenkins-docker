@@ -15,7 +15,7 @@ LABEL \
 
 # Install packages, download files ...
 RUN mkdir --parents /usr/share/man/man1/ && \
-	docker-apt curl git gnupg jq openjdk-11-jre-headless openssh-client ssl-cert unzip && \
+	docker-apt curl git gnupg jq openjdk-17-jre-headless openssh-client ssl-cert unzip && \
 	rm --force --recursive /usr/share/man
 
 # Configure: jenkins
