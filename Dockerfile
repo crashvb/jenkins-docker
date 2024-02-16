@@ -25,8 +25,8 @@ ENV \
 	JENKINS_SHARE=/usr/share/jenkins \
 	JENKINS_SLAVE_PORT=50000 \
 	JENKINS_UID=1000 \
-	JENKINS_VERSION=2.391 \
-	JENKINS_VERSION_CLI=2.12.11
+	JENKINS_VERSION=2.445 \
+	JENKINS_VERSION_CLI=2.12.15
 COPY jenkins-plugin-cli /usr/local/bin/
 ARG jenkins_plugins="configuration-as-code git job-dsl pipeline-model-definition workflow-cps workflow-job"
 RUN groupadd --gid=${JENKINS_GID} jenkins && \
