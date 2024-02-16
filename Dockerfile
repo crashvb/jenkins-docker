@@ -28,7 +28,7 @@ ENV \
 	JENKINS_VERSION=2.445 \
 	JENKINS_VERSION_CLI=2.12.15
 COPY jenkins-plugin-cli /usr/local/bin/
-ARG jenkins_plugins="configuration-as-code git job-dsl pipeline-model-definition workflow-cps workflow-job"
+ARG jenkins_plugins="configuration-as-code docker-plugin git job-dsl pipeline-model-definition workflow-cps workflow-job"
 RUN groupadd --gid=${JENKINS_GID} jenkins && \
 	useradd --gid=${JENKINS_GID} --groups=ssl-cert --home-dir=${JENKINS_HOME} --no-create-home --uid=${JENKINS_UID} jenkins && \
 	mkdir --parents ${JENKINS_SHARE} && \
