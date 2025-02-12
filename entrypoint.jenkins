@@ -11,6 +11,7 @@ if [[ ! -e "${EP_RUN}" ]] ; then
 
 	# Generate passwords (needed for CasC) ...
 	generate_password jenkins_admin
+	generate_password jenkins_prometheus
 
 	# Generate ssh keys ...
 	generate_sshkey jenkins
