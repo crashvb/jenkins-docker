@@ -15,7 +15,19 @@ LABEL \
 
 # Install packages, download files ...
 RUN mkdir --parents /usr/share/man/man1/ && \
-	docker-apt curl git gnupg jq openjdk-17-jre-headless openssh-client ssl-cert unzip && \
+	docker-apt \
+		curl \
+		fontconfig \
+		git \
+		gnupg \
+		jq \
+		libharfbuzz-dev \
+		openjdk-21-jre-headless \
+		openssh-client \
+		ssl-cert \
+		ttf-mscorefonts-installer \
+		unzip \
+		&& \
 	rm --force --recursive /usr/share/man
 
 # Configure: jenkins
@@ -25,8 +37,8 @@ ENV \
 	JENKINS_SHARE=/usr/share/jenkins \
 	JENKINS_SLAVE_PORT=50000 \
 	JENKINS_UID=1000 \
-	JENKINS_VERSION=2.445 \
-	JENKINS_VERSION_CLI=2.12.15
+	JENKINS_VERSION=2.541.1 \
+	JENKINS_VERSION_CLI=2.14.0
 COPY jenkins-plugin-cli /usr/local/bin/
 ARG jenkins_plugins="configuration-as-code docker-plugin git job-dsl pipeline-model-definition workflow-cps workflow-job"
 RUN groupadd --gid=${JENKINS_GID} jenkins && \
