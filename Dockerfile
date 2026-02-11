@@ -1,10 +1,10 @@
-FROM crashvb/supervisord:202402150134@sha256:c05da5b946d637ee406a2372b8855e1b93ecccee84efd3226c5219430ef020ea
+FROM crashvb/supervisord:202508010207@sha256:3da6ccd0b750c1895c467794e49673b3897c5f9568486dc5a97019cfc0e006b5
 ARG org_opencontainers_image_created=undefined
 ARG org_opencontainers_image_revision=undefined
 LABEL \
 	org.opencontainers.image.authors="Richard Davis <crashvb@gmail.com>" \
-	org.opencontainers.image.base.digest="sha256:c05da5b946d637ee406a2372b8855e1b93ecccee84efd3226c5219430ef020ea" \
-	org.opencontainers.image.base.name="crashvb/supervisord:202402150134" \
+	org.opencontainers.image.base.digest="sha256:3da6ccd0b750c1895c467794e49673b3897c5f9568486dc5a97019cfc0e006b5" \
+	org.opencontainers.image.base.name="crashvb/supervisord:202508010207" \
 	org.opencontainers.image.created="${org_opencontainers_image_created}" \
 	org.opencontainers.image.description="Image containing jenkins." \
 	org.opencontainers.image.licenses="Apache-2.0" \
